@@ -111,6 +111,11 @@ nav .nav-logo{
   color:var(--text-primary);
   text-decoration:none;
 }
+nav .nav-right{
+  display:flex;
+  align-items:center;
+  gap:2.6rem;
+}
 nav .nav-links{
   display:flex;
   gap:2.6rem;
@@ -126,8 +131,33 @@ nav .nav-links a{
   transition:color 0.3s ease, opacity 0.3s ease;
 }
 nav .nav-links a:hover{color:var(--gold);opacity:1;}
+/* animated gold underline on nav links */
+nav .nav-links a:not(.nav-links-reserve){position:relative;}
+nav .nav-links a:not(.nav-links-reserve)::after{
+  content:'';position:absolute;left:0;bottom:-6px;
+  width:0;height:1px;background:var(--gold);transition:width .35s ease;
+}
+nav .nav-links a:not(.nav-links-reserve):hover::after{width:100%;}
 
-.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;}
+/* Reservation button in nav (always visible) */
+nav .nav-reserve{
+  font-family:var(--serif-display);
+  text-transform:uppercase;
+  letter-spacing:0.22em;
+  font-size:0.74rem;
+  color:var(--gold);
+  text-decoration:none;
+  border:1px solid var(--gold);
+  padding:0.6rem 1.5rem;
+  white-space:nowrap;
+  transition:background 0.4s ease, color 0.4s ease;
+}
+nav .nav-reserve:hover{background:var(--gold);color:var(--bg-primary);}
+
+/* Reservation link shown only inside the mobile slide-out panel */
+.nav-links-reserve{display:none;}
+
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:6px;}
 .nav-toggle span{width:24px;height:1px;background:var(--text-primary);display:block;}
 
 /* ============================================================
@@ -190,6 +220,20 @@ nav .nav-links a:hover{color:var(--gold);opacity:1;}
 }
 .hero-cta:hover{background:var(--gold);color:var(--bg-primary);}
 
+/* ===== Hero entrance: staggered rise ===== */
+@keyframes riseIn{
+  from{opacity:0;transform:translateY(26px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.hero-content > *{opacity:0;animation:riseIn 1.1s cubic-bezier(.22,.61,.36,1) forwards;}
+.hero-content > *:nth-child(1){animation-delay:.25s;}
+.hero-content > *:nth-child(2){animation-delay:.5s;}
+.hero-content > *:nth-child(3){animation-delay:.78s;}
+.hero-content > *:nth-child(4){animation-delay:1.05s;}
+/* hero parallax/fade driven by JS custom property */
+.hero-bg{will-change:transform;transform:translateY(var(--hero-shift,0));}
+.hero-content{will-change:opacity,transform;}
+
 /* scroll indicator */
 .scroll-hint{
   position:absolute;
@@ -247,12 +291,15 @@ nav .nav-links a:hover{color:var(--gold);opacity:1;}
   font-size:1.02rem;
   max-width:34ch;
 }
+.concept-img-wrap{overflow:hidden;}
 .concept-img{
   width:100%;
   height:36rem;
   object-fit:cover;
   filter:brightness(0.85);
+  transition:transform 1.1s cubic-bezier(.22,.61,.36,1), filter 0.5s ease;
 }
+.concept-img-wrap:hover .concept-img{transform:scale(1.05);filter:brightness(0.95);}
 
 /* ============================================================
    DRINKS
@@ -271,6 +318,7 @@ nav .nav-links a:hover{color:var(--gold);opacity:1;}
 .drink-card{
   background:#1A1A1A;
   border:1px solid transparent;
+  overflow:hidden;
   transition:border 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 .drink-card:hover{
@@ -283,7 +331,9 @@ nav .nav-links a:hover{color:var(--gold);opacity:1;}
   height:18rem;
   object-fit:cover;
   filter:brightness(0.8);
+  transition:transform 0.9s cubic-bezier(.22,.61,.36,1), filter 0.4s ease;
 }
+.drink-card:hover img{transform:scale(1.07);filter:brightness(0.95);}
 .drink-card .card-body{padding:2rem 1.8rem 2.4rem;}
 .drink-card h3{
   font-family:var(--serif-display);
@@ -330,7 +380,9 @@ nav .nav-links a:hover{color:var(--gold);opacity:1;}
   filter:brightness(0.82);
   user-select:none;
   -webkit-user-drag:none;
+  transition:transform 0.9s cubic-bezier(.22,.61,.36,1), filter 0.5s ease;
 }
+.gallery img:hover{transform:scale(1.04);filter:brightness(0.95);}
 
 /* ============================================================
    ABOUT (bartender)
@@ -439,7 +491,7 @@ footer{
   background:var(--bg-primary);
   padding:3.5rem 8vw;
   display:grid;
-  grid-template-columns:1fr auto 1fr;
+  grid-template-columns:1fr auto;
   align-items:center;
   gap:2rem;
 }
@@ -498,21 +550,35 @@ footer .foot-social a:hover{color:var(--gold);}
   .section{padding:6rem 7vw;}
   nav{padding:1.4rem 7vw;}
   nav.scrolled{padding:1rem 7vw;}
+  nav .nav-right{gap:1.1rem;}
   nav .nav-links{
     position:fixed;
     top:0;right:0;
     height:100vh;
-    width:70%;
+    width:75%;
     background:rgba(10,10,10,0.97);
     backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     flex-direction:column;
     justify-content:center;
     align-items:center;
     gap:2.5rem;
     transform:translateX(100%);
     transition:transform 0.5s ease;
+    z-index:1050;
   }
   nav .nav-links.open{transform:translateX(0);}
+  /* show the reservation entry inside the panel; gold outline */
+  .nav-links-reserve{
+    display:inline-block;
+    border:1px solid var(--gold);
+    color:var(--gold);
+    padding:0.7rem 2rem;
+    opacity:1;
+    margin-top:0.5rem;
+  }
+  /* compact reservation button stays in the top bar */
+  nav .nav-reserve{padding:0.5rem 1.1rem;font-size:0.7rem;letter-spacing:0.18em;}
   .nav-toggle{display:flex;z-index:1100;}
   .concept,.about,.info-grid{grid-template-columns:1fr;gap:3rem;}
   .concept-img{height:24rem;}
@@ -525,6 +591,17 @@ footer .foot-social a:hover{color:var(--gold);}
   footer .foot-nav{flex-wrap:wrap;}
   footer .foot-social{justify-content:center;}
 }
+
+/* ===== Respect users who prefer less motion ===== */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+  }
+  .hero-content > *{opacity:1 !important;}
+  .hero-bg{transform:none !important;}
+}
 </style>
 </head>
 <body>
@@ -532,15 +609,19 @@ footer .foot-social a:hover{color:var(--gold);}
 <!-- SECTION: NAVIGATION -->
 <nav id="nav">
   <a href="#hero" class="nav-logo">BAR demo</a>
-  <div class="nav-links" id="navLinks">
-    <a href="#concept">Concept</a>
-    <a href="#drinks">Drinks</a>
-    <a href="#space">Space</a>
-    <a href="#info">Info</a>
+  <div class="nav-right">
+    <div class="nav-links" id="navLinks">
+      <a href="#concept">Concept</a>
+      <a href="#drinks">Drinks</a>
+      <a href="#space">Space</a>
+      <a href="#info">Info</a>
+      <a href="#reserve" class="nav-links-reserve">Reservation</a>
+    </div>
+    <a href="#reserve" class="nav-reserve">予約</a>
+    <button class="nav-toggle" id="navToggle" aria-label="menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
-  <button class="nav-toggle" id="navToggle" aria-label="menu">
-    <span></span><span></span><span></span>
-  </button>
 </nav>
 
 <!-- SECTION: HERO -->
@@ -568,7 +649,9 @@ footer .foot-social a:hover{color:var(--gold);}
     琥珀のグラスを傾ければ、昼間の喧騒は遠く沈む。<br>
     一杯の奥にある静けさこそ、この店が差し出す贅沢です。</p>
   </div>
-  <img class="concept-img" src="https://images.unsplash.com/photo-1575444758702-4a6b9222336e?w=800&q=80" alt="bar interior" loading="lazy">
+  <div class="concept-img-wrap">
+    <img class="concept-img" src="https://images.unsplash.com/photo-1575444758702-4a6b9222336e?w=800&q=80" alt="bar interior" loading="lazy">
+  </div>
 </section>
 
 <hr class="rule">
@@ -671,12 +754,6 @@ footer .foot-social a:hover{color:var(--gold);}
 <!-- SECTION: FOOTER -->
 <footer>
   <div class="foot-logo">BAR demo</div>
-  <nav class="foot-nav">
-    <a href="#concept">Concept</a>
-    <a href="#drinks">Drinks</a>
-    <a href="#space">Space</a>
-    <a href="#info">Info</a>
-  </nav>
   <div class="foot-social">
     <a href="#" aria-label="Instagram">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
@@ -714,6 +791,28 @@ const io = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15 });
 document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+/* ===== Hero parallax + fade on scroll ===== */
+const heroBg = document.querySelector('.hero-bg');
+const heroContent = document.querySelector('.hero-content');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ticking = false;
+function heroParallax(){
+  const y = window.scrollY;
+  const h = window.innerHeight;
+  if (heroBg) heroBg.style.setProperty('--hero-shift', (y * 0.35) + 'px');
+  if (heroContent){
+    const p = Math.min(y / (h * 0.8), 1);
+    heroContent.style.opacity = (1 - p).toFixed(3);
+    heroContent.style.transform = 'translateY(' + (y * 0.18) + 'px)';
+  }
+  ticking = false;
+}
+if (!reduceMotion){
+  window.addEventListener('scroll', () => {
+    if (!ticking){ requestAnimationFrame(heroParallax); ticking = true; }
+  }, { passive: true });
+}
 
 /* ===== Drag-to-scroll gallery ===== */
 const gallery = document.getElementById('gallery');
